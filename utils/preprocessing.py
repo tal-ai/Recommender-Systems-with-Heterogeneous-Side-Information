@@ -1,4 +1,6 @@
 import pandas as pd
+import sys
+import os
 import numpy as np
 
 r_cols = ["user_id","movie_id","rating","unix_timestamp"]
@@ -24,4 +26,3 @@ def generate_train_data(train_file_location,test_file_location,n=943,m=1682):
     for i in range(len(user_record_test)):
         rating_matrix_test[user_record_test[i]-1,movie_record_test[i]-1] = ratings_record_test[i]
     return sigma_matrix, rating_matrix, rating_matrix_test
-
