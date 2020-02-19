@@ -33,13 +33,13 @@ def initialize(z,d,q):
 
 class HIRE():
     def __init__(self, user_flat_feature, item_flat_feature, user_hierarchy, item_hierarchy,
-    																					gamma=0.5, corrupted_rate=0.2, beta=0.5, lamda=1,alpha=0.5,d_hidden=50):
+    																					gamma=0.5, theta=0.5, corrupted_rate=0.2, beta=0.5, lamda=1,alpha=0.5,d_hidden=50):
         # user flat features
         self.u_flat = user_flat_feature
         self.i_flat = item_flat_feature
         self.u_hier = user_hierarchy
         self.i_hier = item_hierarchy
-        self.gamma, self.corrupted, self.beta, self.lamda, self.alpha, self.d = gamma, corrupted_rate, beta, lamda, alpha, d_hidden
+        self.gamma, self.theta, self.corrupted, self.beta, self.lamda, self.alpha, self.d = gamma,theta, corrupted_rate, beta, lamda, alpha, d_hidden
         self.z = user_flat_feature.shape[0]
         self.q = item_flat_feature.shape[0]
         self.n1 = user_hierarchy.shape[0]
@@ -90,11 +90,11 @@ class HIRE():
     				print("[Info] At time-step {}, test data mse loss is {}".format(times,loss_test))
 
     		W1 -= Lipschitz_W1(self.u_flat, self.corrupted, self.gamma, self.z) * SGD_W1(self.u_flat, self.corrupted, self.gamma, S1, U, self.z, W1)
-    		W2 -= Lipschitz_W2(self.i_flat, self.corrupted, self.gamma, self.q) * SGD_W2(V, self.corrupted, self.gamma, S2, self.i_flat, W2, self.q)
+    		W2 -= Lipschitz_W2(self.i_flat, self.corrupted, self.theta, self.q) * SGD_W2(V, self.corrupted, self.theta, S2, self.i_flat, W2, self.q)
     		S1 -= Lipschitz_S1(U) * SGD_S1(W1, self.u_flat, U, self.gamma, S1)
-    		S2 -= Lipschitz_S2(V) * SGD_S2(W2, self.i_flat, V, S2, self.gamma)
-    		V1 -= Lipschitzz_V1(U1, U2, V2, self.lamda, self.beta, self.i_hier, S2, self.gamma) * SGD_V1(U1, U2, V2, sigma, V1, train_data, self.lamda, self.beta, self.i_hier, self.gamma, S2, self.i_flat,W2)
-    		V2 -= Lipschitzz_V2(U1,U2, self.beta, V1, self.i_hier, self.lamda, self.gamma, S2, self.m1) * SGD_V2(U2, U1, sigma, V2, V1,train_data, self.beta, self.i_hier, self.m1, self.lamda, self.gamma, S2, W2, self.i_flat)
+    		S2 -= Lipschitz_S2(V) * SGD_S2(W2, self.i_flat, V, S2, self.theta)
+    		V1 -= Lipschitzz_V1(U1, U2, V2, self.lamda, self.beta, self.i_hier, S2, self.theta) * SGD_V1(U1, U2, V2, sigma, V1, train_data, self.lamda, self.beta, self.i_hier, self.theta, S2, self.i_flat,W2)
+    		V2 -= Lipschitzz_V2(U1,U2, self.beta, V1, self.i_hier, self.lamda, self.theta, S2, self.m1) * SGD_V2(U2, U1, sigma, V2, V1,train_data, self.beta, self.i_hier, self.m1, self.lamda, self.theta, S2, W2, self.i_flat)
     		U1 -= Lipschitzz_U1(U2, V2, V1, self.alpha, self.lamda, self.u_hier, S1, self.gamma) * SGD_U1(sigma, U1, U2, V1, V2,train_data,self.alpha, self.u_hier, self.lamda, self.gamma, S1, self.u_flat, W1)
     		U2 -= Lipschitzz_U2(U1, V1, V2, self.lamda, self.gamma, S1, self.u_hier, self.alpha, self.n1) * SGD_U2(U1, sigma, U2, V2, V1, train_data, self.beta, self.gamma, S1, self.u_flat, W1, self.alpha, self.u_hier, self.n1,self.lamda)
     		times += 1
